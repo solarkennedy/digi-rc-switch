@@ -1,9 +1,5 @@
 #include <RCSwitch.h>
-
-#define USB_CFG_DEVICE_NAME     'D','i','g','i','B','l','i','n','k'
-#define USB_CFG_DEVICE_NAME_LEN 9
 #include <DigiUSB.h>
-
 
 RCSwitch mySwitch = RCSwitch();
 byte in = 0;
