@@ -84,6 +84,11 @@ class ArduinoUsbDevice(object):
     def _transfer(self, request_type, request, index, value):
         """
         """
+        print "request_type: %s" % hex(request_type)
+        print "request: %s" % hex(request)
+        print "wvalue: %s" % hex((USB_HID_REPORT_TYPE_FEATURE << 8) | 0)
+        print "windex: %s" % hex(index)
+        print "value: %s" % str(value)
         return self.device.ctrl_transfer(request_type, request,
                                         (USB_HID_REPORT_TYPE_FEATURE << 8) | 0,
                                          index,

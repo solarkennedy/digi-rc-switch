@@ -1,5 +1,5 @@
 #include <RCSwitch.h>
-#include <DigiUSB.h>
+#include <DigiCDC.h>
 
 RCSwitch mySwitch = RCSwitch();
 byte in = 0;
@@ -9,6 +9,7 @@ byte byte3 = 0;
 byte byte4 = 0;
 int next = 0;
 long code = 0;
+long last_time = 0;
 
 
 // The rc-switch library requires a long int, but we can only
@@ -19,55 +20,58 @@ long composeLong(byte one, byte two, byte three, byte four) {
 }
 
 void setup() {
-  DigiUSB.begin();
+  SerialUSB.begin();
   mySwitch.enableTransmit(1);
   mySwitch.setPulseLength(192);
+  last_time = millis();
 }
 
 void loop() {
-  DigiUSB.refresh();
-  if (DigiUSB.available() > 0) {
-    in = DigiUSB.read();
-    if (next == 0) {
-      if (in == 115) {
-        next = 1;
-        DigiUSB.println("Start");
-      }
+
+  if (SerialUSB.available()) {
+    if (last_time <= millis() - 1000) {
+      SerialUSB.println("Start");
+      next = 1;
+      last_time = millis();
     }
-    else if (next == 1) {
+    in = SerialUSB.read();
+
+    if (next == 1) {
       byte1 = in;
-      DigiUSB.print("byte1 ");
-      DigiUSB.println(in, HEX);
+      SerialUSB.print(F("byte1 "));
+      SerialUSB.println(in, HEX);
       next = 2;
     }
     else if (next == 2) {
       byte2 = in;
-      DigiUSB.print("byte2 ");
-      DigiUSB.println(in, HEX);
+      SerialUSB.print(F("byte2 "));
+      SerialUSB.println(in, HEX);
       next = 3;
     }
     else if (next == 3) {
       byte3 = in;
-      DigiUSB.print("byte3 ");
-      DigiUSB.println(in, HEX);
+      SerialUSB.print(F("byte3 "));
+      SerialUSB.println(in, HEX);
       next = 4;
     }
     else if (next == 4) {
       byte4 = in;
-      DigiUSB.print("byte4 ");
-      DigiUSB.println(in, HEX);
+      SerialUSB.print(F("byte4 "));
+      SerialUSB.println(in, HEX);
       code = composeLong(byte1, byte2, byte3, byte4);
-      DigiUSB.print("Sending Code:");
-      DigiUSB.print(code);
-      DigiUSB.print(" (hex: ");
-      DigiUSB.print(code, HEX);
-      DigiUSB.print(")...");
+      SerialUSB.print(F("Sending Code:"));
+      SerialUSB.print(code);
+      SerialUSB.print(F(" (hex: "));
+      SerialUSB.print(code, HEX);
+      SerialUSB.print(F(")..."));
       mySwitch.send(code, 24);
-      DigiUSB.println("Done");
+      SerialUSB.println(F("Done"));
+      SerialUSB.println("");
       next = 0;
     } else {
-      DigiUSB.print("Else Got:");
-      DigiUSB.println(in, HEX);
+      SerialUSB.print(F("Else Got:"));
+      SerialUSB.println(in, HEX);
     }
   }
+  SerialUSB.refresh();
 }
