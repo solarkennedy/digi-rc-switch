@@ -1,5 +1,7 @@
 # digi-rc-switch
 
+[![Build Status](https://travis-ci.org/solarkennedy/digi-rc-switch.svg?branch=master)](https://travis-ci.org/solarkennedy/digi-rc-switch)
+
 Code to use a Digispark (ATtiny85) to send rc-switch RF codes over a 433mhz
 transmitter via USB.
 

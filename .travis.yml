@@ -1,0 +1,18 @@
+language: python
+python:
+    - "2.7"
+
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
+env:
+    - PLATFORMIO_CI_SRC=./digi-rc-switch.ino
+
+install:
+    - pip install -U platformio
+    - wget https://github.com/sui77/rc-switch/archive/master.zip  -O /tmp/rc-switch.zip
+    - unzip /tmp/rc-switch.zip -d /tmp
+
+script:
+    - platformio ci --lib="." --lib="/tmp/rc-switch-master" --board=digispark-tiny
