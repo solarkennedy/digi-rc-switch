@@ -1,5 +1,5 @@
 #include <RCSwitch.h>
-#include <DigiCDC.h>
+#include <DigiUSB.h>
 
 RCSwitch mySwitch = RCSwitch();
 byte in = 0;
@@ -10,7 +10,6 @@ byte byte4 = 0;
 int next = 0;
 long code = 0;
 long last_time = 0;
-
 
 // The debug print code interferes with the stability
 // of the usb thing, the attiny can't print out reliably.
@@ -24,74 +23,78 @@ long composeLong(byte one, byte two, byte three, byte four) {
 }
 
 void setup() {
-  SerialUSB.begin();
+  DigiUSB.begin();
   mySwitch.enableTransmit(1);
   mySwitch.setPulseLength(192);
   last_time = millis();
 }
 
 void loop() {
-
-  if (SerialUSB.available()) {
+  DigiUSB.refresh();
+  if (DigiUSB.available() > 0) {
     if (last_time <= millis() - 1000) {
-      #ifdef DEBUG
-      SerialUSB.println("Start");
-      #endif
-      next = 1;
-      last_time = millis();
+        #ifdef DEBUG
+        DigiUSB.println("Start");
+        #endif
+        next = 1;
+	last_time = millis();
+      }
     }
-    in = SerialUSB.read();
 
+    in = DigiUSB.read();
     if (next == 1) {
       byte1 = in;
       #ifdef DEBUG
-      SerialUSB.print(F("byte1 "));
-      SerialUSB.println(in, HEX);
+      DigiUSB.print(F("byte1 "));
+      DigiUSB.println(in, HEX);
       #endif
       next = 2;
     }
     else if (next == 2) {
       byte2 = in;
       #ifdef DEBUG
-      SerialUSB.print(F("byte2 "));
-      SerialUSB.println(in, HEX);
+      DigiUSB.print(F("byte2 "));
+      DigiUSB.println(in, HEX);
       #endif
       next = 3;
     }
     else if (next == 3) {
       byte3 = in;
       #ifdef DEBUG
-      SerialUSB.print(F("byte3 "));
-      SerialUSB.println(in, HEX);
+      DigiUSB.print(F("byte3 "));
+      DigiUSB.println(in, HEX);
       #endif
+      DigiUSB.print("byte3 ");
+      DigiUSB.println(in, HEX);
       next = 4;
     }
     else if (next == 4) {
       byte4 = in;
       #ifdef DEBUG
-      SerialUSB.print(F("byte4 "));
-      SerialUSB.println(in, HEX);
+      DigiUSB.print(F("byte4 "));
+      DigiUSB.println(in, HEX);
       #endif
       code = composeLong(byte1, byte2, byte3, byte4);
       #ifdef DEBUG
-      SerialUSB.print(F("Sending Code:"));
-      SerialUSB.print(code);
-      SerialUSB.print(F(" (hex: "));
-      SerialUSB.print(code, HEX);
-      SerialUSB.print(F(")..."));
+      DigiUSB.print(F("Sending Code:"));
+      DigiUSB.print(code);
+      DigiUSB.print(F(" (hex: "));
+      DigiUSB.print(code, HEX);
+      DigiUSB.print(F(")..."));
       #endif
+      DigiUSB.refresh();
       mySwitch.send(code, 24);
+      DigiUSB.refresh();
       #ifdef DEBUG
-      SerialUSB.println(F("Done"));
-      SerialUSB.println("");
+      DigiUSB.println(F("Done"));
+      DigiUSB.println("");
       #endif
       next = 0;
     #ifdef DEBUG
     } else {
-      SerialUSB.print(F("Else Got:"));
-      SerialUSB.println(in, HEX);
+      DigiUSB.print(F("Else Got:"));
+      DigiUSB.println(in, HEX);
     #endif
     }
   }
-  SerialUSB.refresh();
 }
