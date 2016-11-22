@@ -2,7 +2,7 @@
 import sys
 import struct
 
-sys.path.append("..")
+sys.path.append(".")
 from arduino.usbdevice import ArduinoUsbDevice
 
 
@@ -11,7 +11,6 @@ def codeToBytes(code):
 
 
 def sendCode(code):
-    theDevice.write(ord("s"))
     print "Sending %s" % str(code)
     for byte in codeToBytes(code):
         print "  Sending byte %s" % hex(byte)

@@ -33,68 +33,67 @@ void loop() {
   DigiUSB.refresh();
   if (DigiUSB.available() > 0) {
     if (last_time <= millis() - 1000) {
-        #ifdef DEBUG
-        DigiUSB.println("Start");
-        #endif
-        next = 1;
-	last_time = millis();
-      }
+#ifdef DEBUG
+      DigiUSB.println("Start");
+#endif
+      next = 1;
+      last_time = millis();
     }
 
     in = DigiUSB.read();
     if (next == 1) {
       byte1 = in;
-      #ifdef DEBUG
+#ifdef DEBUG
       DigiUSB.print(F("byte1 "));
       DigiUSB.println(in, HEX);
-      #endif
+#endif
       next = 2;
     }
     else if (next == 2) {
       byte2 = in;
-      #ifdef DEBUG
+#ifdef DEBUG
       DigiUSB.print(F("byte2 "));
       DigiUSB.println(in, HEX);
-      #endif
+#endif
       next = 3;
     }
     else if (next == 3) {
       byte3 = in;
-      #ifdef DEBUG
+#ifdef DEBUG
       DigiUSB.print(F("byte3 "));
       DigiUSB.println(in, HEX);
-      #endif
+#endif
       DigiUSB.print("byte3 ");
       DigiUSB.println(in, HEX);
       next = 4;
     }
     else if (next == 4) {
       byte4 = in;
-      #ifdef DEBUG
+#ifdef DEBUG
       DigiUSB.print(F("byte4 "));
       DigiUSB.println(in, HEX);
-      #endif
+#endif
       code = composeLong(byte1, byte2, byte3, byte4);
-      #ifdef DEBUG
+#ifdef DEBUG
       DigiUSB.print(F("Sending Code:"));
       DigiUSB.print(code);
       DigiUSB.print(F(" (hex: "));
       DigiUSB.print(code, HEX);
       DigiUSB.print(F(")..."));
-      #endif
+#endif
       DigiUSB.refresh();
       mySwitch.send(code, 24);
       DigiUSB.refresh();
-      #ifdef DEBUG
+#ifdef DEBUG
       DigiUSB.println(F("Done"));
       DigiUSB.println("");
-      #endif
+#endif
       next = 0;
-    #ifdef DEBUG
+#ifdef DEBUG
     } else {
       DigiUSB.print(F("Else Got:"));
       DigiUSB.println(in, HEX);
-    #endif
+#endif
     }
   }
 }
